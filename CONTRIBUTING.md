@@ -99,7 +99,7 @@ Windows-specific code is only compiled by the `windows.yml` GitHub Actions workf
    git tag -a vx.y.z -m "vx.y.z"
    git push origin vx.y.z
    ```
-3. `release.yml` builds the Windows zip, the Fedora RPM and the Ubuntu DEB and publishes them as a
+3. `release.yml` builds the Windows installer and zip, the Fedora RPM and the Ubuntu DEB and publishes them as a
    GitHub release with generated release notes. Tags with a suffix such as `v1.1.0-rc1` are marked
    as pre-release.
 

@@ -30,5 +30,6 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-') }}
           files: |
             *.zip
+            *-setup.exe
             *.rpm
             *.deb

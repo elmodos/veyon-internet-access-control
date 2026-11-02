@@ -47,15 +47,20 @@
 
 ### Windows (комп’ютер супервайзера і керовані комп’ютери)
 
-Один і той самий файл плагіна працює у Veyon Master, Veyon Configurator і Veyon Server, тож на всіх комп’ютерах із Windows він встановлюється однаково. Завантажте з релізів `veyon-internet-access-control-win64.zip` і розпакуйте. Далі:
+Один і той самий файл плагіна працює у Veyon Master, Veyon Configurator і Veyon Server, тож на всіх комп’ютерах із Windows він встановлюється однаково. На комп’ютері супервайзера після встановлення перезапустіть Veyon Master.
 
-- двічі клацніть `install.cmd` (він попросить права адміністратора), або
-- для віддаленого чи масового розгортання виконайте від імені адміністратора:
-  ```powershell
-  powershell -ExecutionPolicy Bypass -File install.ps1
-  ```
+**Інсталятор (рекомендовано):** завантажте з релізів `veyon-internet-access-control-<версія>-win64-setup.exe` і запустіть. Він знаходить встановлений Veyon, перевіряє, що це Veyon 4.11, кладе плагін у теку `plugins` і перезапускає службу Veyon. Плагін з’являється в *Програмах і засобах*, звідки його можна видалити; під час видалення прибираються й усі правила брандмауера плагіна. Для віддаленого чи масового розгортання виконайте від імені адміністратора:
 
-Скрипт копіює `internetaccesscontrol.dll` у `C:\Program Files\Veyon\plugins` і перезапускає службу Veyon. На комп’ютері супервайзера після цього перезапустіть Veyon Master. `uninstall.cmd` / `uninstall.ps1` видаляють плагін і всі створені ним правила брандмауера.
+```bat
+veyon-internet-access-control-1.0.0-win64-setup.exe /S
+"C:\Program Files\Veyon Internet Access Control\uninstall.exe" /S
+```
+
+Тихе встановлення переривається, якщо встановлено Veyon не версії 4.11.
+
+**Скрипти:** як альтернатива — завантажте `veyon-internet-access-control-win64.zip`, розпакуйте й двічі клацніть `install.cmd` або виконайте від імені адміністратора `powershell -ExecutionPolicy Bypass -File install.ps1`. `uninstall.cmd` / `uninstall.ps1` видаляють плагін і його правила брандмауера.
+
+> Встановлення чи оновлення Veyon видаляє всі плагіни з його теки `plugins`. Після кожного оновлення Veyon встановлюйте плагін знову.
 
 ### Linux (комп’ютер супервайзера)
 
@@ -100,7 +105,7 @@ sudo cmake --install build      # встановлює поруч із libveyon-
 
 Опції CMake і команди для пакунків описано в [README.md](README.md#building).
 
-**Важливо для Windows:** DLL потрібно збирати з **тією самою версією Qt, яку постачає інсталятор Veyon** (`WINDOWS_QT_VERSION` у `.github/workflows/windows.yml`), інакше Veyon падає. Тому DLL збирає GitHub Actions. Тег `v*` запускає `.github/workflows/release.yml`, який публікує zip для Windows, RPM і DEB як GitHub-реліз.
+**Важливо для Windows:** DLL потрібно збирати з **тією самою версією Qt, яку постачає інсталятор Veyon** (`WINDOWS_QT_VERSION` у `.github/workflows/windows.yml`), інакше Veyon падає. Тому DLL збирає GitHub Actions. Скрипт NSIS-інсталятора — `packaging/windows/installer.nsi`; `makensis` працює й на Linux (`mingw32-nsis` на Fedora, `nsis` на Debian/Ubuntu). Тег `v*` запускає `.github/workflows/release.yml`, який публікує інсталятор і zip для Windows, RPM і DEB як GitHub-реліз.
 
 ### Переклади
 

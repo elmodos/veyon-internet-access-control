@@ -47,15 +47,20 @@ Install the plugin on the **supervisor computer and on every managed computer**.
 
 ### Windows (supervisor and managed computers)
 
-The same plugin file serves Veyon Master, Veyon Configurator and Veyon Server, so install it the same way on every Windows computer. Download `veyon-internet-access-control-win64.zip` from the releases and unpack it. Then either:
+The same plugin file serves Veyon Master, Veyon Configurator and Veyon Server, so install it the same way on every Windows computer. On the supervisor computer, restart Veyon Master afterwards.
 
-- double-click `install.cmd` (it asks for administrator rights), or
-- for remote or mass deployment, run as administrator:
-  ```powershell
-  powershell -ExecutionPolicy Bypass -File install.ps1
-  ```
+**Installer (recommended):** download `veyon-internet-access-control-<version>-win64-setup.exe` from the releases and run it. It finds the Veyon installation, checks that it is Veyon 4.11, puts the plugin into the Veyon `plugins` directory and restarts the Veyon service. The plugin appears in *Apps & features*, where it can be uninstalled again; uninstalling also removes all firewall rules of the plugin. For remote or mass deployment, run as administrator:
 
-The script copies `internetaccesscontrol.dll` to `C:\Program Files\Veyon\plugins` and restarts the Veyon service. On the supervisor computer, restart Veyon Master afterwards. `uninstall.cmd` / `uninstall.ps1` remove the plugin and every firewall rule it created.
+```bat
+veyon-internet-access-control-1.0.0-win64-setup.exe /S
+"C:\Program Files\Veyon Internet Access Control\uninstall.exe" /S
+```
+
+A silent installation is aborted if the installed Veyon isn't 4.11.
+
+**Scripts:** alternatively download `veyon-internet-access-control-win64.zip`, unpack it and double-click `install.cmd`, or run `powershell -ExecutionPolicy Bypass -File install.ps1` as administrator. `uninstall.cmd` / `uninstall.ps1` remove the plugin and its firewall rules.
+
+> Installing or updating Veyon deletes all plugins from its `plugins` directory. Install the plugin again after every Veyon update.
 
 ### Linux (supervisor computer)
 
@@ -111,7 +116,7 @@ sudo cmake --install build      # installs next to libveyon-core.so
 - **Fedora:** see `packaging/fedora/*.spec`. Put the `git archive` tarball and the Veyon source tarball into `~/rpmbuild/SOURCES`, then run `rpmbuild -ba`. `.github/workflows/fedora.yml` shows the exact commands.
 - **Debian/Ubuntu:** `ln -s packaging/debian debian && dpkg-buildpackage -b -us -uc`
 - **Arch:** `cd packaging/arch && makepkg`
-- **Windows:** use the GitHub Actions workflow. The DLL has to be built with the **same Qt version that the Veyon installer ships** (`WINDOWS_QT_VERSION` in `.github/workflows/windows.yml`), otherwise Veyon crashes. Pushing a `v*` tag runs `.github/workflows/release.yml`, which publishes the Windows zip, RPM and DEB as a GitHub release.
+- **Windows:** use the GitHub Actions workflow. The DLL has to be built with the **same Qt version that the Veyon installer ships** (`WINDOWS_QT_VERSION` in `.github/workflows/windows.yml`), otherwise Veyon crashes. The NSIS installer script is `packaging/windows/installer.nsi`; `makensis` also runs on Linux (`mingw32-nsis` on Fedora, `nsis` on Debian/Ubuntu). Pushing a `v*` tag runs `.github/workflows/release.yml`, which publishes the Windows installer and zip, RPM and DEB as a GitHub release.
 
 ### Translations
 
