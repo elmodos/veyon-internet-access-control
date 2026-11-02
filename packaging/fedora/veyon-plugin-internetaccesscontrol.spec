@@ -3,7 +3,7 @@
 %global veyon_plugindir %{_libdir}/veyon
 
 Name:           veyon-plugin-internetaccesscontrol
-Version:        1.0.0
+Version:        0.0.1
 Release:        1%{?dist}
 Summary:        Veyon plugin for blocking internet access on managed computers
 
@@ -69,5 +69,5 @@ fi
 %{veyon_plugindir}/%{plugin_name}.so
 
 %changelog
-* Mon Nov 02 2026 elmodos <offnormal@gmail.com> - 1.0.0-1
+* Mon Nov 02 2026 elmodos <offnormal@gmail.com> - 0.0.1-1
 - Initial package

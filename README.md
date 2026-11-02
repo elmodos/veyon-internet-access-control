@@ -52,7 +52,7 @@ The same plugin file serves Veyon Master, Veyon Configurator and Veyon Server, s
 **Installer (recommended):** download `veyon-internet-access-control-<version>-win64-setup.exe` from the releases and run it. It finds the Veyon installation, checks that it is Veyon 4.11, puts the plugin into the Veyon `plugins` directory and restarts the Veyon service. The plugin appears in *Apps & features*, where it can be uninstalled again; uninstalling also removes all firewall rules of the plugin. For remote or mass deployment, run as administrator:
 
 ```bat
-veyon-internet-access-control-1.0.0-win64-setup.exe /S
+veyon-internet-access-control-0.0.1-win64-setup.exe /S
 "C:\Program Files\Veyon Internet Access Control\uninstall.exe" /S
 ```
 

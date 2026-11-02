@@ -52,7 +52,7 @@
 **Інсталятор (рекомендовано):** завантажте з релізів `veyon-internet-access-control-<версія>-win64-setup.exe` і запустіть. Він знаходить встановлений Veyon, перевіряє, що це Veyon 4.11, кладе плагін у теку `plugins` і перезапускає службу Veyon. Плагін з’являється в *Програмах і засобах*, звідки його можна видалити; під час видалення прибираються й усі правила брандмауера плагіна. Для віддаленого чи масового розгортання виконайте від імені адміністратора:
 
 ```bat
-veyon-internet-access-control-1.0.0-win64-setup.exe /S
+veyon-internet-access-control-0.0.1-win64-setup.exe /S
 "C:\Program Files\Veyon Internet Access Control\uninstall.exe" /S
 ```
 

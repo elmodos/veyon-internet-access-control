@@ -1,6 +1,6 @@
 ﻿; NSIS installer for the Veyon Internet Access Control plugin
 ;
-; makensis -DVERSION=1.0.0 -DPLUGIN_DLL=build/internetaccesscontrol.dll -DOUTFILE=setup.exe packaging/windows/installer.nsi
+; makensis -DVERSION=0.0.1 -DPLUGIN_DLL=build/internetaccesscontrol.dll -DOUTFILE=setup.exe packaging/windows/installer.nsi
 ;
 ; Silent installation: setup.exe /S
 ; Silent removal:      "C:\Program Files\Veyon Internet Access Control\uninstall.exe" /S

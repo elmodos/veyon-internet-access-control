@@ -1,6 +1,6 @@
 # Builds the package from this repository checkout: cd packaging/arch && makepkg -si
 pkgname=veyon-plugin-internetaccesscontrol
-pkgver=1.0.0
+pkgver=0.0.1
 pkgrel=1
 _veyonver=4.11.4
 pkgdesc="Veyon plugin for blocking internet access on managed computers"
