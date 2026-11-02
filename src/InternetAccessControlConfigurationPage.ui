@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>InternetAccessControlConfigurationPage</class>
+ <widget class="QWidget" name="InternetAccessControlConfigurationPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>540</width>
+    <height>460</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Internet Access Control</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="infoLabel">
+     <property name="text">
+      <string>These settings are configured on the supervisor computer and sent to the managed computers each time the internet gets blocked.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="generalGroupBox">
+     <property name="title">
+      <string>General settings</string>
+     </property>
+     <layout class="QGridLayout" name="generalLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="blockModeLabel">
+        <property name="text">
+         <string>Blocking mode:</string>
+        </property>
+        <property name="buddy">
+         <cstring>blockMode</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="blockMode">
+        <item>
+         <property name="text">
+          <string>Block web ports only (HTTP, HTTPS, QUIC)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Block all traffic except local networks</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="blockedPortsLabel">
+        <property name="text">
+         <string>Blocked ports (TCP/UDP):</string>
+        </property>
+        <property name="buddy">
+         <cstring>blockedPorts</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="blockedPorts">
+        <property name="toolTip">
+         <string>Comma-separated ports or port ranges, e.g. 80,443,8000-8999. Only used when blocking web ports.</string>
+        </property>
+        <property name="text">
+         <string notr="true">80,443,8080,8443</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="blockDnsTraffic">
+        <property name="text">
+         <string>Block DNS queries to external servers (UDP port 53)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QCheckBox" name="autoUnblockOnExit">
+        <property name="toolTip">
+         <string>Read from the configuration of each managed computer.</string>
+        </property>
+        <property name="text">
+         <string>Restore internet access when the Veyon Server starts or stops (e.g. on reboot or logoff)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QCheckBox" name="excludeSupervisorComputer">
+        <property name="toolTip">
+         <string>Ignores the block command on the computer running Veyon Master, e.g. when it is part of its own computer list. Disable this to test the plugin on a single computer.</string>
+        </property>
+        <property name="text">
+         <string>Never block the supervisor computer itself</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="networkGroupBox">
+     <property name="title">
+      <string>Network exceptions</string>
+     </property>
+     <layout class="QGridLayout" name="networkLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="allowedSubnetsLabel">
+        <property name="text">
+         <string>Local networks (never blocked):</string>
+        </property>
+        <property name="buddy">
+         <cstring>allowedSubnets</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="allowedSubnets">
+        <property name="toolTip">
+         <string>Comma-separated IP addresses or subnets in CIDR notation. Loopback and link-local addresses are always allowed.</string>
+        </property>
+        <property name="text">
+         <string notr="true">10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.0/8,169.254.0.0/16</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="allowedHostsLabel">
+        <property name="text">
+         <string>Always allowed hosts (domains or IPs):</string>
+        </property>
+        <property name="buddy">
+         <cstring>allowedHosts</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="allowedHosts">
+        <property name="toolTip">
+         <string>Domain names are resolved on each managed computer when the internet gets blocked. Websites served via CDNs may use many changing addresses and therefore not work reliably.</string>
+        </property>
+        <property name="placeholderText">
+         <string>e.g. wikipedia.org, intranet.example.com, 203.0.113.10</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

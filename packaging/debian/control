@@ -1,0 +1,25 @@
+Source: veyon-plugin-internetaccesscontrol
+Section: net
+Priority: optional
+Maintainer: elmodos <offnormal@gmail.com>
+Build-Depends: debhelper-compat (= 13),
+               cmake (>= 3.21),
+               ninja-build,
+               qt6-base-dev,
+               qt6-tools-dev,
+               qt6-tools-dev-tools,
+               qt6-l10n-tools,
+               veyon (>= 4.11)
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+
+Package: veyon-plugin-internetaccesscontrol
+Architecture: amd64
+Depends: veyon (>= 4.11), veyon (<< 4.12), ${shlibs:Depends}, ${misc:Depends}
+Description: Veyon plugin for blocking internet access on managed computers
+ Internet Access Control adds a "Block Internet" button to Veyon Master. On
+ managed Windows computers it blocks outbound web or all non-LAN traffic via
+ Windows Firewall while keeping local network access and Veyon itself working.
+ .
+ On Linux this package provides the Veyon Master and Veyon Configurator side
+ of the plugin.

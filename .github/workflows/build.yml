@@ -1,0 +1,145 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  VEYON_VERSION: 4.11.4
+  # must match the Qt version bundled with the Veyon Windows installer, otherwise Veyon Master crashes
+  WINDOWS_QT_VERSION: 6.10.3
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check that all version numbers match
+        run: |
+          cmake=$(sed -nE 's/^\s*VERSION ([0-9.]+)$/\1/p' CMakeLists.txt | head -1)
+          spec=$(sed -nE 's/^Version:\s+(\S+)/\1/p' packaging/fedora/*.spec)
+          deb=$(sed -nE '1s/.*\(([^)]+)\).*/\1/p' packaging/debian/changelog)
+          arch=$(sed -nE 's/^pkgver=(\S+)/\1/p' packaging/arch/PKGBUILD)
+          echo "CMake $cmake, Fedora $spec, Debian $deb, Arch $arch"
+          versions="$cmake $spec $deb $arch"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            tag=${GITHUB_REF_NAME#v}
+            echo "Tag $tag"
+            versions="$versions ${tag%%-*}"
+          fi
+          [ $(echo $versions | tr ' ' '\n' | sort -u | wc -l) -eq 1 ] || { echo "::error::Version numbers differ"; exit 1; }
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.WINDOWS_QT_VERSION }}
+          arch: win64_mingw
+          tools: tools_ninja tools_mingw1310
+
+      - name: Extract Veyon binaries
+        shell: bash
+        run: |
+          curl -sSfL -o veyon-setup.exe "https://github.com/veyon/veyon/releases/download/v${VEYON_VERSION}/veyon-${VEYON_VERSION}.0-win64-setup.exe"
+          7z x veyon-setup.exe -oveyon-bin > /dev/null
+
+      - name: Build
+        shell: bash
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++ \
+            -DVEYON_VERSION=${VEYON_VERSION} \
+            -DVEYON_LIBRARY_DIR="$PWD/veyon-bin"
+          cmake --build build
+
+      - name: Package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path dist | Out-Null
+          Copy-Item build/internetaccesscontrol.dll, scripts/windows/*, README.md, README.uk.md, LICENSE -Destination dist/
+          Compress-Archive -Path dist/* -DestinationPath veyon-internet-access-control-win64.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: veyon-internet-access-control-win64.zip
+
+  fedora:
+    runs-on: ubuntu-latest
+    container: fedora:44
+    steps:
+      - name: Install dependencies
+        run: |
+          dnf -y install git rpm-build cmake gcc-c++ ninja-build qt6-qtbase-devel qt6-qttools-devel
+          dnf -y install "https://github.com/veyon/veyon/releases/download/v${VEYON_VERSION}/veyon-${VEYON_VERSION}.0-fedora.44.x86_64.rpm"
+
+      - uses: actions/checkout@v4
+
+      - name: Build RPM
+        run: |
+          git config --global --add safe.directory "$PWD"
+          spec=packaging/fedora/veyon-plugin-internetaccesscontrol.spec
+          name=$(rpmspec -q --srpm --qf '%{name}' $spec)
+          version=$(rpmspec -q --srpm --qf '%{version}' $spec)
+          mkdir -p ~/rpmbuild/SOURCES
+          git archive --prefix=$name-$version/ -o ~/rpmbuild/SOURCES/$name-$version.tar.gz HEAD
+          curl -sSfL -o ~/rpmbuild/SOURCES/veyon-${VEYON_VERSION}.tar.gz "https://github.com/veyon/veyon/archive/refs/tags/v${VEYON_VERSION}.tar.gz"
+          rpmbuild -ba $spec
+          cp ~/rpmbuild/RPMS/x86_64/$name-$version-*.rpm .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fedora
+          path: '*.rpm'
+
+  ubuntu:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          curl -sSfL -o /tmp/veyon.deb "https://github.com/veyon/veyon/releases/download/v${VEYON_VERSION}/veyon_${VEYON_VERSION}.0-ubuntu.24.04_amd64.deb"
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev debhelper cmake ninja-build qt6-base-dev qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools /tmp/veyon.deb
+
+      - name: Build DEB
+        run: |
+          curl -sSfL "https://github.com/veyon/veyon/archive/refs/tags/v${VEYON_VERSION}.tar.gz" | tar -xz -C /tmp
+          ln -s packaging/debian debian
+          VEYON_SOURCE_DIR=/tmp/veyon-${VEYON_VERSION} dpkg-buildpackage -b -us -uc
+          cp ../*.deb .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-24.04
+          path: '*.deb'
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [ version, windows, fedora, ubuntu ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: |
+            *.zip
+            *.rpm
+            *.deb

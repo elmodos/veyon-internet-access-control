@@ -1,0 +1,35 @@
+# Builds the package from this repository checkout: cd packaging/arch && makepkg -si
+pkgname=veyon-plugin-internetaccesscontrol
+pkgver=1.0.0
+pkgrel=1
+_veyonver=4.11.4
+pkgdesc="Veyon plugin for blocking internet access on managed computers"
+arch=('x86_64')
+license=('MIT')
+# Veyon plugins are tied to the minor series they were built against
+depends=('veyon>=4.11' 'veyon<4.12' 'qt6-base')
+makedepends=('cmake' 'ninja' 'qt6-tools')
+# only the headers are used
+source=("veyon-${_veyonver}.tar.gz::https://github.com/veyon/veyon/archive/refs/tags/v${_veyonver}.tar.gz")
+sha256sums=('92ef01feb342fa1357fea5bbf957d0791d784f969ce490db2472bc59fbdb98eb')
+
+_srcroot="$(realpath "${startdir}/../..")"
+
+build() {
+	cmake -S "${_srcroot}" -B build -G Ninja \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DVEYON_SOURCE_DIR="${srcdir}/veyon-${_veyonver}" \
+		-DVEYON_PLUGIN_DIR=/usr/lib/veyon \
+		-DIAC_BUILD_TESTS=ON
+	cmake --build build
+}
+
+check() {
+	ctest --test-dir build --output-on-failure
+}
+
+package() {
+	DESTDIR="${pkgdir}" cmake --install build
+	install -Dm644 "${_srcroot}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+	install -Dm644 -t "${pkgdir}/usr/share/doc/${pkgname}" "${_srcroot}/README.md" "${_srcroot}/README.uk.md"
+}

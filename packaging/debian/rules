@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+# Build from the repository root: ln -s packaging/debian debian && dpkg-buildpackage -b -us -uc
+# Set VEYON_SOURCE_DIR to an unpacked Veyon source tree to avoid downloading the headers.
+
+include /usr/share/dpkg/architecture.mk
+
+VEYON_PLUGIN_DIR := /usr/lib/$(DEB_HOST_MULTIARCH)/veyon
+
+%:
+	dh $@ --buildsystem=cmake+ninja
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DVEYON_PLUGIN_DIR=$(VEYON_PLUGIN_DIR) \
+		-DVEYON_LIBRARY_DIR=$(VEYON_PLUGIN_DIR) \
+		$(if $(VEYON_SOURCE_DIR),-DVEYON_SOURCE_DIR=$(VEYON_SOURCE_DIR)) \
+		-DIAC_BUILD_TESTS=ON
+
+# libveyon-core.so lives in a private directory without shlibs information
+override_dh_shlibdeps:
+	dh_shlibdeps -l$(VEYON_PLUGIN_DIR) -- --ignore-missing-info
