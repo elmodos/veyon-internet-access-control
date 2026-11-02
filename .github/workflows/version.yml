@@ -1,0 +1,39 @@
+name: Version
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+  # called by release.yml
+  workflow_call:
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check that all plugin versions match
+        run: |
+          cmake=$(sed -nE 's/^\s*VERSION ([0-9.]+)$/\1/p' CMakeLists.txt | head -1)
+          spec=$(sed -nE 's/^Version:\s+(\S+)/\1/p' packaging/fedora/*.spec)
+          deb=$(sed -nE '1s/.*\(([^)]+)\).*/\1/p' packaging/debian/changelog)
+          arch=$(sed -nE 's/^pkgver=(\S+)/\1/p' packaging/arch/PKGBUILD)
+          echo "CMake $cmake, Fedora $spec, Debian $deb, Arch $arch"
+          versions="$cmake $spec $deb $arch"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            tag=${GITHUB_REF_NAME#v}
+            echo "Tag $tag"
+            versions="$versions ${tag%%-*}"
+          fi
+          [ $(echo $versions | tr ' ' '\n' | sort -u | wc -l) -eq 1 ] || { echo "::error::Plugin version numbers differ"; exit 1; }
+
+      - name: Check that all Veyon versions match
+        run: |
+          cmake=$(sed -nE 's/^set\(VEYON_VERSION "([0-9.]+)".*/\1/p' CMakeLists.txt)
+          spec=$(sed -nE 's/^%global veyon_version (\S+)/\1/p' packaging/fedora/*.spec)
+          arch=$(sed -nE 's/^_veyonver=(\S+)/\1/p' packaging/arch/PKGBUILD)
+          workflows=$(sed -nE 's/^\s+VEYON_VERSION: (\S+)/\1/p' .github/workflows/*.yml | sort -u | tr '\n' ' ')
+          echo "CMake $cmake, Fedora $spec, Arch $arch, workflows $workflows"
+          [ $(echo $cmake $spec $arch $workflows | tr ' ' '\n' | sort -u | wc -l) -eq 1 ] || { echo "::error::Veyon version numbers differ"; exit 1; }

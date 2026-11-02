@@ -1,0 +1,56 @@
+name: Windows
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+  # called by release.yml
+  workflow_call:
+
+env:
+  # keep in sync with CMakeLists.txt, checked by version.yml
+  VEYON_VERSION: 4.11.4
+  # must match the Qt version bundled with the Veyon Windows installer, otherwise Veyon Master crashes
+  WINDOWS_QT_VERSION: 6.10.3
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.WINDOWS_QT_VERSION }}
+          arch: win64_mingw
+          tools: tools_ninja tools_mingw1310
+
+      - name: Extract Veyon binaries
+        shell: bash
+        run: |
+          curl -sSfL -o veyon-setup.exe "https://github.com/veyon/veyon/releases/download/v${VEYON_VERSION}/veyon-${VEYON_VERSION}.0-win64-setup.exe"
+          7z x veyon-setup.exe -oveyon-bin > /dev/null
+
+      - name: Build
+        shell: bash
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++ \
+            -DVEYON_VERSION=${VEYON_VERSION} \
+            -DVEYON_LIBRARY_DIR="$PWD/veyon-bin"
+          cmake --build build
+
+      - name: Package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path dist | Out-Null
+          Copy-Item build/internetaccesscontrol.dll, scripts/windows/*, README.md, README.uk.md, LICENSE -Destination dist/
+          Compress-Archive -Path dist/* -DestinationPath veyon-internet-access-control-win64.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: veyon-internet-access-control-win64.zip

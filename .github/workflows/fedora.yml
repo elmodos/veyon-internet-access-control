@@ -1,0 +1,42 @@
+name: Fedora
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+  # called by release.yml
+  workflow_call:
+
+env:
+  # keep in sync with CMakeLists.txt, checked by version.yml
+  VEYON_VERSION: 4.11.4
+
+jobs:
+  fedora:
+    runs-on: ubuntu-latest
+    container: fedora:44
+    steps:
+      - name: Install dependencies
+        run: |
+          dnf -y install git rpm-build cmake gcc-c++ ninja-build qt6-qtbase-devel qt6-qttools-devel
+          dnf -y install "https://github.com/veyon/veyon/releases/download/v${VEYON_VERSION}/veyon-${VEYON_VERSION}.0-fedora.44.x86_64.rpm"
+
+      - uses: actions/checkout@v4
+
+      - name: Build RPM
+        run: |
+          git config --global --add safe.directory "$PWD"
+          spec=packaging/fedora/veyon-plugin-internetaccesscontrol.spec
+          name=$(rpmspec -q --srpm --qf '%{name}' $spec)
+          version=$(rpmspec -q --srpm --qf '%{version}' $spec)
+          mkdir -p ~/rpmbuild/SOURCES
+          git archive --prefix=$name-$version/ -o ~/rpmbuild/SOURCES/$name-$version.tar.gz HEAD
+          curl -sSfL -o ~/rpmbuild/SOURCES/veyon-${VEYON_VERSION}.tar.gz "https://github.com/veyon/veyon/archive/refs/tags/v${VEYON_VERSION}.tar.gz"
+          rpmbuild -ba $spec
+          cp ~/rpmbuild/RPMS/x86_64/$name-$version-*.rpm .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fedora
+          path: '*.rpm'

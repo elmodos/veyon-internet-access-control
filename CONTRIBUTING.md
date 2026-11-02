@@ -85,11 +85,11 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-Windows-specific code is only compiled by the Windows job of the GitHub Actions workflow.
+Windows-specific code is only compiled by the `windows.yml` GitHub Actions workflow.
 
 ## Releasing
 
-1. Bump the version in all four places, which CI checks for consistency:
+1. Bump the version in all four places, which `version.yml` checks for consistency:
    - `project(... VERSION x.y.z)` in `CMakeLists.txt`
    - `Version:` and a new `%changelog` entry in `packaging/fedora/*.spec`
    - a new entry on top of `packaging/debian/changelog`
@@ -99,9 +99,11 @@ Windows-specific code is only compiled by the Windows job of the GitHub Actions 
    git tag -a vx.y.z -m "vx.y.z"
    git push origin vx.y.z
    ```
-3. The workflow builds the Windows zip, the Fedora RPM and the Ubuntu DEB and publishes them as a
+3. `release.yml` builds the Windows zip, the Fedora RPM and the Ubuntu DEB and publishes them as a
    GitHub release with generated release notes. Tags with a suffix such as `v1.1.0-rc1` are marked
    as pre-release.
 
 The Windows DLL has to be built with the Qt version shipped by the Veyon Windows installer.
-`WINDOWS_QT_VERSION` in the workflow sets it; check it when updating `VEYON_VERSION`.
+`WINDOWS_QT_VERSION` in `windows.yml` sets it; check it when updating `VEYON_VERSION`. The Veyon
+version is set in `CMakeLists.txt`, the Fedora spec, the PKGBUILD and the workflows; `version.yml`
+checks that they match.

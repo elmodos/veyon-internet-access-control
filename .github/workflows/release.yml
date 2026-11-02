@@ -1,0 +1,34 @@
+name: Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+
+jobs:
+  version:
+    uses: ./.github/workflows/version.yml
+  windows:
+    uses: ./.github/workflows/windows.yml
+  fedora:
+    uses: ./.github/workflows/fedora.yml
+  ubuntu:
+    uses: ./.github/workflows/ubuntu.yml
+
+  release:
+    needs: [ version, windows, fedora, ubuntu ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: |
+            *.zip
+            *.rpm
+            *.deb

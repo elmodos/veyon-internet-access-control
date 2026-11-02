@@ -1,5 +1,9 @@
 # Veyon Internet Access Control
 
+[![Windows](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/windows.yml/badge.svg?branch=main)](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/windows.yml)
+[![Fedora](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/fedora.yml/badge.svg?branch=main)](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/fedora.yml)
+[![Ubuntu](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/ubuntu.yml/badge.svg?branch=main)](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/ubuntu.yml)
+
 [English](README.md)
 
 Плагін для [Veyon](https://veyon.io), що додає у Veyon Master кнопку **«Заблокувати Інтернет / Розблокувати Інтернет»**. На керованих комп’ютерах із Windows він блокує вихідний інтернет-трафік через Windows Firewall, а локальна мережа й сам Veyon при цьому працюють далі.
@@ -96,7 +100,7 @@ sudo cmake --install build      # встановлює поруч із libveyon-
 
 Опції CMake і команди для пакунків описано в [README.md](README.md#building).
 
-**Важливо для Windows:** DLL потрібно збирати з **тією самою версією Qt, яку постачає інсталятор Veyon** (`WINDOWS_QT_VERSION` у `.github/workflows/build.yml`), інакше Veyon падає. Тому DLL збирає GitHub Actions. Тег `v*` публікує zip для Windows, RPM і DEB як GitHub-реліз.
+**Важливо для Windows:** DLL потрібно збирати з **тією самою версією Qt, яку постачає інсталятор Veyon** (`WINDOWS_QT_VERSION` у `.github/workflows/windows.yml`), інакше Veyon падає. Тому DLL збирає GitHub Actions. Тег `v*` запускає `.github/workflows/release.yml`, який публікує zip для Windows, RPM і DEB як GitHub-реліз.
 
 ### Переклади
 

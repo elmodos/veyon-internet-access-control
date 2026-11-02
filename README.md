@@ -1,5 +1,9 @@
 # Veyon Internet Access Control
 
+[![Windows](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/windows.yml/badge.svg?branch=main)](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/windows.yml)
+[![Fedora](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/fedora.yml/badge.svg?branch=main)](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/fedora.yml)
+[![Ubuntu](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/ubuntu.yml/badge.svg?branch=main)](https://github.com/elmodos/veyon-internet-access-control/actions/workflows/ubuntu.yml)
+
 [Українською](README.uk.md)
 
 A [Veyon](https://veyon.io) plugin that adds a **Block Internet / Unblock Internet** button to Veyon Master. On managed Windows computers it blocks outbound internet traffic through Windows Firewall, while the local network and Veyon itself keep working.
@@ -104,10 +108,10 @@ sudo cmake --install build      # installs next to libveyon-core.so
 
 ### Packages
 
-- **Fedora:** see `packaging/fedora/*.spec`. Put the `git archive` tarball and the Veyon source tarball into `~/rpmbuild/SOURCES`, then run `rpmbuild -ba`. `.github/workflows/build.yml` shows the exact commands.
+- **Fedora:** see `packaging/fedora/*.spec`. Put the `git archive` tarball and the Veyon source tarball into `~/rpmbuild/SOURCES`, then run `rpmbuild -ba`. `.github/workflows/fedora.yml` shows the exact commands.
 - **Debian/Ubuntu:** `ln -s packaging/debian debian && dpkg-buildpackage -b -us -uc`
 - **Arch:** `cd packaging/arch && makepkg`
-- **Windows:** use the GitHub Actions workflow. The DLL has to be built with the **same Qt version that the Veyon installer ships** (`WINDOWS_QT_VERSION` in the workflow), otherwise Veyon crashes. Pushing a `v*` tag publishes the Windows zip, RPM and DEB as a GitHub release.
+- **Windows:** use the GitHub Actions workflow. The DLL has to be built with the **same Qt version that the Veyon installer ships** (`WINDOWS_QT_VERSION` in `.github/workflows/windows.yml`), otherwise Veyon crashes. Pushing a `v*` tag runs `.github/workflows/release.yml`, which publishes the Windows zip, RPM and DEB as a GitHub release.
 
 ### Translations
 

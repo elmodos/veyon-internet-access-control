@@ -1,0 +1,37 @@
+name: Ubuntu
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+  # called by release.yml
+  workflow_call:
+
+env:
+  # keep in sync with CMakeLists.txt, checked by version.yml
+  VEYON_VERSION: 4.11.4
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          curl -sSfL -o /tmp/veyon.deb "https://github.com/veyon/veyon/releases/download/v${VEYON_VERSION}/veyon_${VEYON_VERSION}.0-ubuntu.24.04_amd64.deb"
+          sudo apt-get update
+          sudo apt-get install -y build-essential dpkg-dev debhelper cmake ninja-build qt6-base-dev qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools /tmp/veyon.deb
+
+      - name: Build DEB
+        run: |
+          curl -sSfL "https://github.com/veyon/veyon/archive/refs/tags/v${VEYON_VERSION}.tar.gz" | tar -xz -C /tmp
+          ln -s packaging/debian debian
+          VEYON_SOURCE_DIR=/tmp/veyon-${VEYON_VERSION} dpkg-buildpackage -b -us -uc
+          cp ../*.deb .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-24.04
+          path: '*.deb'
