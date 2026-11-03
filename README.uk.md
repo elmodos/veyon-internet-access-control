@@ -68,7 +68,7 @@ veyon-internet-access-control-0.0.1-win64-setup.exe /S
 | --- | --- |
 | Fedora | `sudo dnf install ./veyon-plugin-internetaccesscontrol-*.rpm` |
 | Debian / Ubuntu / Mint | `sudo apt install ./veyon-plugin-internetaccesscontrol_*.deb` |
-| Arch | `cd packaging/arch && makepkg -si` |
+| Arch | `cd packaging/arch && makepkg -si` (потрібен `veyon-bin` з AUR) |
 
 Потім перезапустіть Veyon Master.
 

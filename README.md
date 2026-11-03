@@ -68,7 +68,7 @@ A silent installation is aborted if the installed Veyon isn't 4.11.
 | --- | --- |
 | Fedora | `sudo dnf install ./veyon-plugin-internetaccesscontrol-*.rpm` |
 | Debian / Ubuntu / Mint | `sudo apt install ./veyon-plugin-internetaccesscontrol_*.deb` |
-| Arch | `cd packaging/arch && makepkg -si` |
+| Arch | `cd packaging/arch && makepkg -si` (needs `veyon-bin` from the AUR) |
 
 Then restart Veyon Master.
 

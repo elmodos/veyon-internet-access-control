@@ -1,4 +1,5 @@
 # Builds the package from this repository checkout: cd packaging/arch && makepkg -si
+# Veyon 4.11 is available for Arch as veyon-bin in the AUR.
 pkgname=veyon-plugin-internetaccesscontrol
 pkgver=0.0.1
 pkgrel=1
@@ -16,10 +17,11 @@ sha256sums=('92ef01feb342fa1357fea5bbf957d0791d784f969ce490db2472bc59fbdb98eb')
 _srcroot="$(realpath "${startdir}/../..")"
 
 build() {
+	# The plugin is installed next to libveyon-core.so: /usr/lib/x86_64-linux-gnu/veyon with
+	# veyon-bin from the AUR (a repackaged Ubuntu package), /usr/lib/veyon with a source build
 	cmake -S "${_srcroot}" -B build -G Ninja \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DVEYON_SOURCE_DIR="${srcdir}/veyon-${_veyonver}" \
-		-DVEYON_PLUGIN_DIR=/usr/lib/veyon \
 		-DIAC_BUILD_TESTS=ON
 	cmake --build build
 }

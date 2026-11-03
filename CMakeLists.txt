@@ -61,12 +61,15 @@ if(VEYON_LIBRARY_DIR)
 		NO_DEFAULT_PATH
 		NO_CMAKE_FIND_ROOT_PATH)
 else()
+	# Fedora/openSUSE, Arch (veyon), Debian/Ubuntu multiarch (also used by veyon-bin on Arch, which
+	# repackages the Ubuntu package; CMAKE_LIBRARY_ARCHITECTURE is only set on Debian), Windows
 	find_library(VEYON_CORE_LIBRARY
 		NAMES veyon-core
 		PATHS
 			/usr/lib64/veyon
 			/usr/lib/veyon
 			/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/veyon
+			/usr/lib/${CMAKE_SYSTEM_PROCESSOR}-linux-gnu/veyon
 			"C:/Program Files/Veyon"
 		NO_CMAKE_SYSTEM_PATH)
 endif()
